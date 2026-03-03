@@ -310,9 +310,30 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
                   >
                     {transcript}
                     {suggestion && (
-                      <span contentEditable={false} className="text-zinc-300 pointer-events-none select-none italic absolute whitespace-pre">
+                      <span
+                        contentEditable={false}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setTranscript(transcript + suggestion);
+                          clearSuggestion();
+
+                          // Move cursor to end
+                          setTimeout(() => {
+                            if (editorRef.current) {
+                              const range = document.createRange();
+                              const sel = window.getSelection();
+                              range.selectNodeContents(editorRef.current);
+                              range.collapse(false);
+                              sel?.removeAllRanges();
+                              sel?.addRange(range);
+                            }
+                          }, 0);
+                        }}
+                        className="text-zinc-300 cursor-pointer select-none italic absolute whitespace-pre z-10"
+                      >
                         {suggestion}
-                        <span className="ml-2 text-[10px] font-black uppercase tracking-widest bg-zinc-100 text-zinc-400 px-2 py-0.5 rounded-md no-italic not-sr-only">Tab</span>
+                        <span className="ml-2 text-[10px] font-black uppercase tracking-widest bg-zinc-100 text-zinc-400 px-2 py-0.5 rounded-md no-italic not-sr-only">Tab or Tap</span>
                       </span>
                     )}
                     {(isRecording || isInitializing) && (
