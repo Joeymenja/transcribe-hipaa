@@ -153,15 +153,15 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
   return (
     <div className="fixed inset-0 bg-white text-black flex flex-col overflow-hidden">
       {/* Action Bar (Top) */}
-      <div className="z-20 p-4 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/80 backdrop-blur-md border-b border-zinc-100">
-        <div className="flex flex-col w-full md:w-auto">
-          <div className="flex flex-wrap items-center gap-3">
-            <div className={`w-3 h-3 rounded-full ${isRecording ? (isPaused ? 'bg-amber-500' : 'bg-red-500 animate-pulse') : 'bg-zinc-200'}`} />
-            <span className="font-mono text-base md:text-lg font-black tracking-tighter uppercase">
-              {isInitializing ? "Initializing Hardware..." : isRecording ? (isPaused ? "Paused" : "Live Transcription") : "Ready"}
+      <div className="z-20 p-3 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/80 backdrop-blur-md border-b border-zinc-100 w-full min-w-0">
+        <div className="flex flex-col w-full md:w-auto min-w-0">
+          <div className="flex flex-wrap items-center gap-2 md:gap-3 min-w-0">
+            <div className={`shrink-0 w-3 h-3 rounded-full ${isRecording ? (isPaused ? 'bg-amber-500' : 'bg-red-500 animate-pulse') : 'bg-zinc-200'}`} />
+            <span className="font-mono text-sm md:text-lg font-black tracking-tighter uppercase truncate">
+              {isInitializing ? "Initializing..." : isRecording ? (isPaused ? "Paused" : "Live Transcription") : "Ready"}
             </span>
             {isRecording && (
-              <span className="ml-2 md:ml-4 font-mono text-zinc-400 font-bold text-sm md:text-base">
+              <span className="ml-0 md:ml-4 font-mono text-zinc-400 font-bold text-xs md:text-base shrink-0">
                 {new Date(duration * 1000).toISOString().substr(14, 5)}
               </span>
             )}
@@ -238,7 +238,7 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
               <button
                 onClick={startRecording}
                 disabled={!mounted || !isSupported}
-                className="w-full md:w-auto px-6 md:px-10 py-3 md:py-4 rounded-full font-black text-base md:text-lg bg-black text-white hover:bg-zinc-800 transition-all transform active:scale-95 shadow-2xl disabled:opacity-50 font-mono"
+                className="w-full md:w-auto px-6 md:px-10 py-4 md:py-4 rounded-full font-black text-sm md:text-lg bg-black text-white hover:bg-zinc-800 transition-all transform active:scale-95 shadow-xl disabled:opacity-50 font-mono"
               >
                 {!mounted ? "Initializing..." : "Start Transcribing"}
               </button>
@@ -277,10 +277,10 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
       {/* Main Content Area */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-20 scroll-smooth selection:bg-black selection:text-white pt-8 md:pt-32"
+        className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-20 scroll-smooth selection:bg-black selection:text-white pt-6 md:pt-32 min-w-0"
       >
-        <div className="max-w-5xl mx-auto w-full">
-          <div className={`space-y-12 transition-all duration-500 w-full ${isStealth ? 'blur-2xl opacity-10 hover:blur-none hover:opacity-100' : ''}`}>
+        <div className="max-w-5xl mx-auto w-full min-w-0">
+          <div className={`space-y-6 md:space-y-12 transition-all duration-500 w-full min-w-0 ${isStealth ? 'blur-2xl opacity-10 hover:blur-none hover:opacity-100' : ''}`}>
             {!transcript && !isRecording && (
               <div className="h-full flex flex-col items-center justify-center pt-32 space-y-12">
                 <div className="flex flex-col items-center space-y-4 opacity-20">
@@ -291,7 +291,7 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
                 </div>
               </div>
             )}
-            <div className={`transition-all duration-700 ${isEnglishFocus ? 'text-teal-600' : ''} text-4xl md:text-6xl font-black leading-[1.1] tracking-tight whitespace-pre-wrap break-words relative w-full`}>
+            <div className={`transition-all duration-700 ${isEnglishFocus ? 'text-teal-600' : ''} text-2xl md:text-6xl font-black leading-snug md:leading-[1.1] tracking-tight whitespace-pre-wrap break-words relative w-full min-w-0`}>
               {isEnglishFocus ? (
                 <div>{translatedTranscript || "Scanning for Speech..."}</div>
               ) : (
@@ -306,7 +306,7 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
                     title="Live Transcript Editor"
                     data-gramm="true"
                     data-gramm_editor="true"
-                    className="w-full bg-transparent border-none p-0 focus:ring-0 outline-none min-h-[400px] font-black pointer-events-auto break-words"
+                    className="w-full min-w-0 bg-transparent border-none p-0 focus:ring-0 outline-none min-h-[400px] font-black pointer-events-auto break-words"
                   >
                     {transcript}
                     {suggestion && (
