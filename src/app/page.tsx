@@ -277,10 +277,10 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
       {/* Main Content Area */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto p-4 md:p-20 scroll-smooth selection:bg-black selection:text-white pt-8 md:pt-32"
+        className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-20 scroll-smooth selection:bg-black selection:text-white pt-8 md:pt-32"
       >
-        <div className="max-w-5xl mx-auto">
-          <div className={`space-y-12 transition-all duration-500 ${isStealth ? 'blur-2xl opacity-10 hover:blur-none hover:opacity-100' : ''}`}>
+        <div className="max-w-5xl mx-auto w-full">
+          <div className={`space-y-12 transition-all duration-500 w-full ${isStealth ? 'blur-2xl opacity-10 hover:blur-none hover:opacity-100' : ''}`}>
             {!transcript && !isRecording && (
               <div className="h-full flex flex-col items-center justify-center pt-32 space-y-12">
                 <div className="flex flex-col items-center space-y-4 opacity-20">
@@ -291,7 +291,7 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
                 </div>
               </div>
             )}
-            <div className={`transition-all duration-700 ${isEnglishFocus ? 'text-teal-600' : ''} text-4xl md:text-6xl font-black leading-[1.1] tracking-tight whitespace-pre-wrap relative`}>
+            <div className={`transition-all duration-700 ${isEnglishFocus ? 'text-teal-600' : ''} text-4xl md:text-6xl font-black leading-[1.1] tracking-tight whitespace-pre-wrap break-words relative w-full`}>
               {isEnglishFocus ? (
                 <div>{translatedTranscript || "Scanning for Speech..."}</div>
               ) : (
@@ -306,7 +306,7 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
                     title="Live Transcript Editor"
                     data-gramm="true"
                     data-gramm_editor="true"
-                    className="w-full bg-transparent border-none p-0 focus:ring-0 outline-none min-h-[400px] font-black pointer-events-auto"
+                    className="w-full bg-transparent border-none p-0 focus:ring-0 outline-none min-h-[400px] font-black pointer-events-auto break-words"
                   >
                     {transcript}
                     {suggestion && (
