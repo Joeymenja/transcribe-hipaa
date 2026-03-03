@@ -153,15 +153,15 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
   return (
     <div className="fixed inset-0 bg-white text-black flex flex-col overflow-hidden">
       {/* Action Bar (Top) */}
-      <div className="z-20 p-6 flex justify-between items-center bg-white/80 backdrop-blur-md border-b border-zinc-100">
-        <div className="flex flex-col">
-          <div className="flex items-center gap-3">
+      <div className="z-20 p-4 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/80 backdrop-blur-md border-b border-zinc-100">
+        <div className="flex flex-col w-full md:w-auto">
+          <div className="flex flex-wrap items-center gap-3">
             <div className={`w-3 h-3 rounded-full ${isRecording ? (isPaused ? 'bg-amber-500' : 'bg-red-500 animate-pulse') : 'bg-zinc-200'}`} />
-            <span className="font-mono text-lg font-black tracking-tighter uppercase">
+            <span className="font-mono text-base md:text-lg font-black tracking-tighter uppercase">
               {isInitializing ? "Initializing Hardware..." : isRecording ? (isPaused ? "Paused" : "Live Transcription") : "Ready"}
             </span>
             {isRecording && (
-              <span className="ml-4 font-mono text-zinc-400 font-bold">
+              <span className="ml-2 md:ml-4 font-mono text-zinc-400 font-bold text-sm md:text-base">
                 {new Date(duration * 1000).toISOString().substr(14, 5)}
               </span>
             )}
@@ -209,7 +209,7 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
             )}
 
             {/* Stealth Toggle (Top Bar) */}
-            <div className="flex items-center gap-2 ml-6 pl-6 border-l border-zinc-100">
+            <div className="flex items-center gap-2 ml-auto md:ml-6 md:pl-6 md:border-l border-zinc-100">
               <button
                 onClick={() => setIsStealth(!isStealth)}
                 title="Stealth Mode (Ctrl+S)"
@@ -231,14 +231,14 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
           )}
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4 w-full md:w-auto mt-4 md:mt-0">
+          <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 w-full">
             {/* Idle State */}
             {!isRecording && (
               <button
                 onClick={startRecording}
                 disabled={!mounted || !isSupported}
-                className="px-10 py-4 rounded-full font-black text-lg bg-black text-white hover:bg-zinc-800 transition-all transform active:scale-95 shadow-2xl disabled:opacity-50 font-mono"
+                className="w-full md:w-auto px-6 md:px-10 py-3 md:py-4 rounded-full font-black text-base md:text-lg bg-black text-white hover:bg-zinc-800 transition-all transform active:scale-95 shadow-2xl disabled:opacity-50 font-mono"
               >
                 {!mounted ? "Initializing..." : "Start Transcribing"}
               </button>
@@ -250,21 +250,21 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
                 {isPaused ? (
                   <button
                     onClick={resumeRecording}
-                    className="px-10 py-4 rounded-full font-black text-lg bg-black text-white hover:bg-zinc-800 transition-all transform active:scale-95 shadow-2xl font-mono"
+                    className="w-full md:w-auto px-6 md:px-10 py-3 md:py-4 rounded-full font-black text-base md:text-lg bg-black text-white hover:bg-zinc-800 transition-all transform active:scale-95 shadow-2xl font-mono"
                   >
                     Resume
                   </button>
                 ) : (
                   <button
                     onClick={pauseRecording}
-                    className="px-8 py-4 rounded-full font-black text-lg bg-zinc-100 text-black hover:bg-zinc-200 transition-all transform active:scale-95 font-mono"
+                    className="w-full md:w-auto px-6 md:px-8 py-3 md:py-4 rounded-full font-black text-base md:text-lg bg-zinc-100 text-black hover:bg-zinc-200 transition-all transform active:scale-95 font-mono"
                   >
                     Pause
                   </button>
                 )}
                 <button
                   onClick={stopRecording}
-                  className="px-8 py-4 rounded-full font-black text-lg bg-zinc-900 text-white hover:bg-black transition-all transform active:scale-95 font-mono"
+                  className="w-full md:w-auto px-6 md:px-8 py-3 md:py-4 rounded-full font-black text-base md:text-lg bg-zinc-900 text-white hover:bg-black transition-all transform active:scale-95 font-mono"
                 >
                   Finish Session
                 </button>
@@ -277,7 +277,7 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
       {/* Main Content Area */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto p-8 md:p-20 scroll-smooth selection:bg-black selection:text-white pt-32"
+        className="flex-1 overflow-y-auto p-4 md:p-20 scroll-smooth selection:bg-black selection:text-white pt-8 md:pt-32"
       >
         <div className="max-w-5xl mx-auto">
           <div className={`space-y-12 transition-all duration-500 ${isStealth ? 'blur-2xl opacity-10 hover:blur-none hover:opacity-100' : ''}`}>
@@ -389,9 +389,9 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
                 </button>
 
                 {/* Clear Button */}
-                <div className="flex items-center ml-auto">
+                <div className="flex items-center mt-4 md:mt-0 md:ml-auto w-full md:w-auto">
                   {isConfirmingClear ? (
-                    <div className="flex gap-2 animate-in fade-in slide-in-from-right-4 transition-all">
+                    <div className="flex gap-2 animate-in fade-in slide-in-from-right-4 transition-all w-full justify-between md:justify-end">
                       <button
                         onClick={() => {
                           clearTranscript();
