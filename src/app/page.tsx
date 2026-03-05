@@ -104,14 +104,18 @@ export default function Home() {
 OBJECTIVE: Summarize the following session transcript into a targeted case management note. 
 INSTRUCTIONS: 
 1. Do NOT use the standard SOAP format.
-2. Structure the note exactly into two sections: "Follow-Up Plan:" and "Relevant Treatment Goals Addressed:".
-3. Under "Follow-Up Plan:", write 4-5 highly actionable sentences detailing specific coordination, phone calls, community outings, or resource navigation planned based on the transcript.
-4. Under "Relevant Treatment Goals Addressed:", list overarching goals (e.g., "Daily Routine Development", "Housing/Transition Planning", "Social Reconnection") and briefly describe how the session addressed them.
-5. Focus heavily on practical needs (phones, IDs, probation compliance, housing, hygiene apps) and community reintegration.
+2. Structure the note exactly into three sections: "NOTES", "Follow-Up Plan:", and "Relevant Treatment Goals Addressed:".
+3. Under "NOTES", write a concise paragraph summarizing the objective facts of the session (e.g., client cooperation, missed/rescheduled appointments, transportation issues, client understanding of plans).
+4. Under "Follow-Up Plan:", write actionable sentences detailing specific coordination, phone calls, community outings, or resource navigation planned based on the transcript.
+5. Under "Relevant Treatment Goals Addressed:", list overarching goals (e.g., "Daily Routine Development", "Housing/Transition Planning", "Social Reconnection") and briefly describe how the session addressed them.
+6. Focus heavily on practical needs (phones, IDs, probation compliance, housing, hygiene apps) and community reintegration.
 
 ${sessionContext ? `\nREFERENCE CONTEXT (LEARNED FROM TEMPLATE):\n${sessionContext}\n` : ""}
 
 EXAMPLE OUTPUT STYLE:
+NOTES
+Client cooperative with ROI signing process. Missed clinic appointment today due to transportation difficulty locating residence. Appointment successfully rescheduled for March 11. Client understands domestic violence classes will be paused during residential treatment and will resume after discharge.
+
 Follow-Up Plan:
 Facilitate phone call to girlfriend confirming hospital location and coordinating visit
 Assist with online SIM card service application...
