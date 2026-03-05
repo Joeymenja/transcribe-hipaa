@@ -100,13 +100,24 @@ export default function Home() {
 
   const handleCopyForAI = () => {
     if (!transcript) return;
-    const clinicalPrompt = `CONTEXT: You are a professional clinical assistant.
-OBJECTIVE: Summarize the following session into a professional clinical intake report. 
+    const clinicalPrompt = `CONTEXT: You are a professional behavioral health case manager or social worker.
+OBJECTIVE: Summarize the following session transcript into a targeted case management note. 
 INSTRUCTIONS: 
-1. Use professional medical terminology.
-2. Structure into the following sections: Subjective (History of Presenting Problem), Objective (Mental Status Exam observations), Assessment (Clinical Impression), and Plan (Recommendations).
-3. If specific substances or safety risks are mentioned, highlight them clearly.
+1. Do NOT use the standard SOAP format.
+2. Structure the note exactly into two sections: "Follow-Up Plan:" and "Relevant Treatment Goals Addressed:".
+3. Under "Follow-Up Plan:", write 4-5 highly actionable sentences detailing specific coordination, phone calls, community outings, or resource navigation planned based on the transcript.
+4. Under "Relevant Treatment Goals Addressed:", list overarching goals (e.g., "Daily Routine Development", "Housing/Transition Planning", "Social Reconnection") and briefly describe how the session addressed them.
+5. Focus heavily on practical needs (phones, IDs, probation compliance, housing, hygiene apps) and community reintegration.
+
 ${sessionContext ? `\nREFERENCE CONTEXT (LEARNED FROM TEMPLATE):\n${sessionContext}\n` : ""}
+
+EXAMPLE OUTPUT STYLE:
+Follow-Up Plan:
+Facilitate phone call to girlfriend confirming hospital location and coordinating visit
+Assist with online SIM card service application...
+
+Relevant Treatment Goals Addressed:
+Daily Routine Development: Supporting practical needs management...
 
 TRANSCRIPT:
 ${transcript}
