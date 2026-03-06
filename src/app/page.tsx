@@ -3,7 +3,7 @@
 import { useRecording } from "@/hooks/useRecording";
 import { usePredictiveText } from "@/hooks/usePredictiveText";
 import DocumentUploader from "@/components/DocumentUploader";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import Docxtemplater from "docxtemplater";
 import PizZip from "pizzip";
 import { saveAs } from "file-saver"; // Need to install this too
@@ -27,18 +27,26 @@ export default function Home() {
     error,
     isInitializing
   } = useRecording(selectedLanguage, isTTSEnabled);
+
+  const SAFETY_FLAGS = ["suicide", "suicidal", "overdose", "relapse", "weapon", "hurt myself", "kill myself", "fentanyl"];
+  const detectedFlags = useMemo(() => {
+    if (!transcript) return [];
+    const lowerTranscript = transcript.toLowerCase();
+    return SAFETY_FLAGS.filter(flag => lowerTranscript.includes(flag));
+  }, [transcript]);
+
+
   const [mounted, setMounted] = useState(false);
   const [showCopied, setShowCopied] = useState(false);
   const [showCopiedAI, setShowCopiedAI] = useState(false);
-  const [isConfirmingClear, setIsConfirmingClear] = useState(false);
   const [isStealth, setIsStealth] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [sessionContext, setSessionContext] = useState("");
+  const { suggestion, clearSuggestion } = usePredictiveText(transcript, sessionContext);
   const [templateBuffer, setTemplateBuffer] = useState<ArrayBuffer | null>(null);
   const [isGeneratingDoc, setIsGeneratingDoc] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
-
-  const { suggestion, clearSuggestion } = usePredictiveText(transcript, sessionContext);
 
   useEffect(() => {
     setMounted(true);
@@ -166,9 +174,19 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
   };
 
   return (
-    <div className="fixed inset-0 bg-white text-black flex flex-col overflow-hidden">
+    <div className={`fixed inset-0 flex flex-col overflow-hidden transition-colors duration-500 print:bg-white print:text-black ${isDarkMode ? 'bg-zinc-950 text-zinc-300' : 'bg-white text-black'}`}>
+
+      {/* Print-Only Clinical Header */}
+      <div className="hidden print:block mb-8 border-b-2 border-black pb-4">
+        <h1 className="text-3xl font-black uppercase tracking-widest text-black">Clinical Case Note</h1>
+        <div className="flex justify-between mt-2 text-sm font-bold opacity-50">
+          <span>Date: {new Date().toLocaleDateString()}</span>
+          <span>Time: {new Date().toLocaleTimeString()}</span>
+        </div>
+      </div>
+
       {/* Action Bar (Top) */}
-      <div className="z-20 p-3 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/80 backdrop-blur-md border-b border-zinc-100 w-full min-w-0">
+      <div className={`z-20 p-3 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b w-full min-w-0 print:hidden transition-colors ${isDarkMode ? 'bg-zinc-950/80 border-zinc-900' : 'bg-white/80 border-zinc-100'} backdrop-blur-md`}>
         <div className="flex flex-col w-full md:w-auto min-w-0">
           <div className="flex flex-wrap items-center gap-2 md:gap-3 min-w-0">
             <div className={`shrink-0 w-3 h-3 rounded-full ${isRecording ? (isPaused ? 'bg-amber-500' : 'bg-red-500 animate-pulse') : 'bg-zinc-200'}`} />
@@ -179,6 +197,14 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
               <span className="ml-0 md:ml-4 font-mono text-zinc-400 font-bold text-xs md:text-base shrink-0">
                 {new Date(duration * 1000).toISOString().substr(14, 5)}
               </span>
+            )}
+            {detectedFlags.length > 0 && (
+              <div className="ml-0 md:ml-4 flex items-center gap-2 bg-red-100 border border-red-500 text-red-700 px-3 py-1 rounded-full animate-pulse transition-all shrink-0">
+                <span className="text-xs md:text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+                  Safety Flag: {detectedFlags.join(", ")}
+                </span>
+              </div>
             )}
             {!isRecording && (
               <select
@@ -223,8 +249,19 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
               </span>
             )}
 
-            {/* Stealth Toggle (Top Bar) */}
-            <div className="flex items-center gap-2 ml-auto md:ml-6 md:pl-6 md:border-l border-zinc-100">
+            {/* Stealth & Dark Mode Toggles (Top Bar) */}
+            <div className="flex items-center gap-2 ml-auto md:ml-6 md:pl-6 md:border-l border-zinc-100/20">
+              <button
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                title="Clinical Dark Mode"
+                className={`p-1.5 rounded-lg transition-all ${isDarkMode ? 'bg-zinc-900 text-teal-400 shadow-lg' : 'bg-transparent text-zinc-300 hover:text-zinc-500'}`}
+              >
+                {isDarkMode ? (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                )}
+              </button>
               <button
                 onClick={() => setIsStealth(!isStealth)}
                 title="Stealth Mode (Ctrl+S)"
@@ -292,7 +329,7 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
       {/* Main Content Area */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-20 scroll-smooth selection:bg-black selection:text-white pt-6 md:pt-32 min-w-0"
+        className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-20 scroll-smooth selection:bg-black selection:text-white pt-6 md:pt-32 min-w-0 print:p-0 print:overflow-visible"
       >
         <div className="max-w-5xl mx-auto w-full min-w-0">
           <div className={`space-y-6 md:space-y-12 transition-all duration-500 w-full min-w-0 ${isStealth ? 'blur-2xl opacity-10 hover:blur-none hover:opacity-100' : ''}`}>
@@ -321,7 +358,7 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
                     title="Live Transcript Editor"
                     data-gramm="true"
                     data-gramm_editor="true"
-                    className="w-full min-w-0 bg-transparent border-none p-0 focus:ring-0 outline-none min-h-[400px] font-black pointer-events-auto break-words"
+                    className={`w-full min-w-0 bg-transparent border-none p-0 focus:ring-0 outline-none min-h-[400px] font-black pointer-events-auto break-words print:text-black print:min-h-0 text-2xl md:text-6xl ${isDarkMode ? 'text-zinc-200' : 'text-black'}`}
                   >
                     {transcript}
                     {suggestion && (
@@ -386,16 +423,34 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
               </div>
             )}
 
-            {/* Minimalist Utilities (Copy & Clear) */}
+            {/* Minimalist Utilities (Copy, Export & Clear) */}
             {transcript && (
-              <div className="flex flex-wrap justify-start gap-6 pt-8 border-t border-zinc-50 animate-in fade-in slide-in-from-bottom-2 duration-700">
+              <div className={`flex flex-wrap justify-start gap-6 pt-8 border-t animate-in fade-in slide-in-from-bottom-2 duration-700 print:hidden ${isDarkMode ? 'border-zinc-800' : 'border-zinc-50'}`}>
+                {/* Export PDF Button */}
+                <button
+                  onClick={() => window.print()}
+                  className={`group flex items-center gap-3 px-4 py-2 rounded-xl transition-all active:scale-95 ${isDarkMode ? 'hover:bg-zinc-900' : 'hover:bg-zinc-50'}`}
+                  title="Export to PDF"
+                >
+                  <div className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'bg-zinc-800 group-hover:bg-zinc-700 text-zinc-400 group-hover:text-zinc-200' : 'bg-zinc-100 group-hover:bg-zinc-200 text-zinc-500 group-hover:text-zinc-900'}`}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                      <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                      <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                  </div>
+                  <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${isDarkMode ? 'text-zinc-500 group-hover:text-zinc-300' : 'text-zinc-400 group-hover:text-zinc-900'}`}>
+                    Export PDF
+                  </span>
+                </button>
+
                 {/* Standard Copy Button */}
                 <button
                   onClick={handleCopy}
-                  className="group flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-zinc-50 transition-all active:scale-95"
+                  className={`group flex items-center gap-3 px-4 py-2 rounded-xl transition-all active:scale-95 ${isDarkMode ? 'hover:bg-zinc-900' : 'hover:bg-zinc-50'}`}
                   title="Copy pure transcript"
                 >
-                  <div className="p-2 bg-zinc-100 rounded-lg group-hover:bg-zinc-200 transition-colors">
+                  <div className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'bg-zinc-800 group-hover:bg-zinc-700 text-zinc-400 group-hover:text-zinc-200' : 'bg-zinc-100 group-hover:bg-zinc-200 text-zinc-500 group-hover:text-zinc-900'}`}>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-500">
                       <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                       <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -468,7 +523,7 @@ ${translatedTranscript ? `EN MIRROR TRANSCRIPT:\n${translatedTranscript}` : ""}
       </div>
 
       {/* Persistence Warning (Bottom) */}
-      <div className="p-4 text-center text-[10px] font-black uppercase tracking-widest text-zinc-300 bg-white border-t border-zinc-50 pointer-events-none">
+      <div className={`p-4 text-center text-[10px] font-black uppercase tracking-widest print:hidden pointer-events-none transition-colors ${isDarkMode ? 'bg-zinc-950 text-zinc-600 border-t border-zinc-900' : 'bg-white text-zinc-300 border-t border-zinc-50'}`}>
         RAM-ONLY SESSION • DATA PURGED ON CLOSE
       </div>
     </div>

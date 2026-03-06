@@ -14,6 +14,21 @@ export interface RecordingState {
     error: string | null;
 }
 
+const applyAutoCorrect = (text: string): string => {
+    return text
+        .replace(/\blexapro\b/gi, "Lexapro")
+        .replace(/\bzoloft\b/gi, "Zoloft")
+        .replace(/\bxanax\b/gi, "Xanax")
+        .replace(/\bfentanyl\b/gi, "Fentanyl")
+        .replace(/\bativan\b/gi, "Ativan")
+        .replace(/\bsoap note\b/gi, "SOAP Note")
+        .replace(/\bmse\b/gi, "MSE")
+        .replace(/\bphi\b/gi, "PHI")
+        .replace(/\bcopper health\b/gi, "Copa Health")
+        .replace(/\bvalue wise\b/gi, "Valleywise")
+        .replace(/\bintense probation\b/gi, "intensive probation");
+};
+
 export const useRecording = (lang: string = "en-US", isTTSEnabled: boolean = false) => {
     const [state, setState] = useState<RecordingState>({
         isRecording: false,
@@ -168,19 +183,10 @@ export const useRecording = (lang: string = "en-US", isTTSEnabled: boolean = fal
                         const segment = event.results[i][0].transcript;
                         if (event.results[i].isFinal) {
                             // Smart Autocorrect for Clinical Terms
-                            let formatted = segment.trim()
-                                .replace(/\blexapro\b/gi, "Lexapro")
-                                .replace(/\bzoloft\b/gi, "Zoloft")
-                                .replace(/\bxanax\b/gi, "Xanax")
-                                .replace(/\bfentanyl\b/gi, "Fentanyl")
-                                .replace(/\bativan\b/gi, "Ativan")
-                                .replace(/\bsoap note\b/gi, "SOAP Note")
-                                .replace(/\bmse\b/gi, "MSE")
-                                .replace(/\bphi\b/gi, "PHI");
-
+                            let formatted = applyAutoCorrect(segment.trim());
                             finalTranscript += (finalTranscript ? " " : "") + formatted;
                         } else {
-                            interimTranscript += segment;
+                            interimTranscript += applyAutoCorrect(segment);
                         }
                     }
 

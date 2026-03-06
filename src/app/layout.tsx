@@ -19,6 +19,13 @@ export const fetchCache = 'force-no-store';
 export const metadata: Metadata = {
   title: "Clinical Workspace Pro",
   description: "Secure, intelligent clinical transcription and documentation workspace.",
+  manifest: "/manifest.json",
+  themeColor: "#09090b",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Clinical Pro",
+  },
 };
 
 export const viewport: Viewport = {
